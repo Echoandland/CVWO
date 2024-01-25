@@ -1,66 +1,55 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from './AuthContext';
-import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const AccountPage: React.FC = () => {
-  const [userInfo, setUserInfo] = useState<any>(null);
-  const [testHistory, setTestHistory] = useState<any[]>([]);
   const { user } = useAuth();
-  const navigate = useNavigate();
-  useEffect(() => {
-  
-    // Fetch user information and test history from the backend
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch("http://localhost:8080/user-info", {
-          method: "GET",
-          // You may need to include authentication headers here if required
-        });
-       
-      
-        if (response.ok) {
-          const result = await response.json();
-          setUserInfo(result.userInfo);
-          setTestHistory(result.testHistory);
-        } else {
-          console.error("Failed to fetch user information");
-        }
-      } catch (error) {
-        console.error("Error during user information fetch:", error);
-      }
-    };
+  const [userData, setUserData] = useState<any>(null);
+  const [testResults, setTestResults] = useState<any[]>([]);
 
-    fetchUserData();
-  }, []);
+  useEffect(() => {
+    if (user) {
+      // Fetch user data
+      axios.get(`/user/${user.id}`, { headers: { Authorization: `Bearer ${user.token}` } })
+        .then((response) => setUserData(response.data))
+        .catch((error) => console.error('Error fetching user data:', error));
+
+      // Fetch test results
+      axios.get(`/user/${user.id}/test-results`, { headers: { Authorization: `Bearer ${user.token}` } })
+        .then((response) => setTestResults(response.data))
+        .catch((error) => console.error('Error fetching test results:', error));
+    }
+  }, [user]);
 
   return (
     <div>
-      <h2>Account Information</h2>
+      <h1>Account Information</h1>
 
-      {userInfo && (
+      {userData && (
         <div>
-          <p>Name: {userInfo.name}</p>
-          <p>Username: {userInfo.username}</p>
-          <p>Password: ********</p>
+          <p>Name: {userData.name}</p>
+          <p>Username: {userData.username}</p>
         </div>
       )}
 
-      <h2>Test History</h2>
+      <h2>Test Results History</h2>
 
-      {testHistory.length > 0 ? (
+      {testResults.length > 0 ? (
         <ul>
-          {testHistory.map((test, index) => (
+          {testResults.map((result, index) => (
             <li key={index}>
-              <p>Date: {test.date}</p>
-              <p>Score: {test.score}</p>
+              <p>Test ID: {result.id}</p>
+              <p>Score: {result.score}</p>
+              {/* Add more information if needed */}
             </li>
           ))}
         </ul>
       ) : (
-        <p>No test history available</p>
+        <p>No test results available.</p>
       )}
     </div>
   );
 };
 
 export default AccountPage;
+
