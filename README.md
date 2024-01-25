@@ -1,6 +1,6 @@
 In this website,I created 5 pages:
 login, register, mainpage, testpage, accountpage
-You can download all the files, and "npm start"in your computer,
+You can download all the files, and "npm install"and "npm start"in your computer,
 however,there exist some issues with my frontend and backend (something
 about url connction) and as I register it seems cannot store the account
 information(the console says registration error ).
