@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	
+	"github.com/gin-contrib/cors"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
@@ -28,6 +28,7 @@ type TestResult struct {
 var db *sql.DB
 
 func main() {
+	
 	var err error
 	db, err = sql.Open("mysql", "root:Wyc@20041218@tcp(localhost:3306)/my_data")
 	if err != nil {
@@ -42,7 +43,11 @@ func main() {
 	fmt.Println("Connected to MySQL database!")
 
 	router := gin.Default()
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:3007"} // Replace with your frontend URL
+	router.Use(cors.New(config))
 
+	router.Use(cors.Default())
 	router.POST("/register", registerHandler)
 	router.POST("/login", loginHandler)
 	router.POST("/submit-test", submitTestHandler)
@@ -123,3 +128,4 @@ func submitTestHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Test submitted successfully"})
 }
+
