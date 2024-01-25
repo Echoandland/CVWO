@@ -1,18 +1,8 @@
 // MainPage.tsx
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from './AuthContext';
+import { Link } from 'react-router-dom';
 
 const MainPage: React.FC = () => {
-    const { user, logout } = useAuth();
-    const navigate = useNavigate();
-  
-    const handleLogout = () => {
-      logout();
-      navigate('/Login'); // Redirect to login page upon logout
-    };
-  
-
   return (
     <div>
       <h1>Welcome</h1>
@@ -23,21 +13,8 @@ const MainPage: React.FC = () => {
         system adopts the mode of answering questions and gives diagnostic reports
         and suggestions according to the situation of answering questions.
       </p>
-      <Link to="/TestPage">
-        <button>Test</button>
-      </Link>
-      {user ? (
-        <>
-          <Link to="/AccountPage">
-            <button>Account</button>
-          </Link>
-          <button onClick={handleLogout}>Logout</button>
-        </>
-      ) : (
-        <Link to="/Login">
-          <button>Login</button>
-        </Link>
-      )}
+      <Link to="/test">Test</Link>
+      <Link to="/account">Account</Link>
     </div>
   );
 };
