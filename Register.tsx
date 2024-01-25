@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from './AuthContext';
 
 const Register: React.FC = () => {
@@ -8,31 +7,48 @@ const Register: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const { login } = useAuth();
-
+  const { register } = useAuth();
 
   const handleRegister = async () => {
     try {
-      const response = await fetch("http://localhost:8080/register", {
-        method: "POST",
+      await register(name, username, password);
+
+      const requestBody = {
+        name: name,
+        username: username,
+        password: password,
+      };
+
+      const requestOptions: RequestInit = {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
+          
         },
-        body: JSON.stringify({ name, username, password }),
-      });
+        body: JSON.stringify(requestBody),
+      };
+
+
+      const response = await fetch('http://localhost:3306/register', requestOptions);
 
       if (response.ok) {
-        const user = await response.json();
-        login(user);
-        navigate('/MainPage'); // Redirect to main page upon successful registration
-      }  else {
-        // Handle registration failure, e.g., show an error message
-        console.error("Registration failed");
+        
+        console.log('Registration successful');
+        
+      
+        navigate('/MainPage');
+      } else {
+   
+        console.error('Registration failed:', await response.json());
+       
       }
     } catch (error) {
-      console.error("Error during registration:", error);
+      console.error('Error during registration:', error);
+   
     }
   };
+
+
   return (
     <div style={{ textAlign: 'center', maxWidth: '400px', margin: 'auto', padding: '20px', border: '1px solid #ccc', borderRadius: '8px', marginTop: '50px', backgroundColor: 'rgba(218, 112, 214, 0.5)', animation: 'fadeIn 1s ease-out' }}>
       <h2 style={{ fontSize: '36px', color: 'purple', marginBottom: '20px' }}>Register</h2>
